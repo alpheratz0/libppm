@@ -1,0 +1,8 @@
+libppm is a little library to create and manipulate ppm images
+
+In order to build this library you need to run `make`.
+
+This program is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License
+version 2 as published by the Free Software Foundation.
+See COPYING for more details.
