@@ -208,7 +208,7 @@ ppm_image_text_5x7(struct ppm_image *image,
 }
 
 extern void
-ppm_image_save(struct ppm_image *image, const char *path)
+ppm_image_save(const struct ppm_image *image, const char *path)
 {
 	FILE *fp;
 	uint8_t pixel[3];

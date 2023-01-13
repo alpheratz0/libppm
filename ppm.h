@@ -47,7 +47,7 @@ ppm_image_text_5x7(struct ppm_image *image,
                    int letter_spacing, const char *text);
 
 extern void
-ppm_image_save(struct ppm_image *image, const char *path);
+ppm_image_save(const struct ppm_image *image, const char *path);
 
 extern void
 ppm_image_destroy(struct ppm_image *image);
