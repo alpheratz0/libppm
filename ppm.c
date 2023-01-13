@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2022 <alpheratz99@protonmail.com>
+	Copyright (C) 2022-2023 <alpheratz99@protonmail.com>
 
 	This program is free software; you can redistribute it and/or modify it under
 	the terms of the GNU General Public License version 2 as published by the
@@ -108,7 +108,8 @@ ppm_image_crop(struct ppm_image *image,
 
 	for (dy = 0; dy < height; ++dy)
 		for (dx = 0; dx < width; ++dx)
-			crop_area[dy*width+dx] = image->pixels[(y+dy)*image->width+x+dx];
+			crop_area[dy * width + dx] =
+				image->pixels[(y + dy) * image->width + x + dx];
 
 	free(image->pixels);
 
@@ -140,9 +141,9 @@ ppm_image_blur(struct ppm_image *image,
 
 	for (dy = 0; dy < height; ++dy)
 		for (dx = 0; dx < width; ++dx)
-			blur_area_previous[dy*width+dx] =
-				blur_area[dy*width+dx] =
-					image->pixels[(y+dy)*image->width+x+dx];
+			blur_area_previous[dy * width + dx] =
+				blur_area[dy * width + dx] =
+					image->pixels[(y + dy) * image->width + x + dx];
 
 	for (pass = 0; pass < strength; ++pass) {
 		tmp = blur_area_previous;
@@ -153,26 +154,29 @@ ppm_image_blur(struct ppm_image *image,
 			for (dx = 0; dx < width; ++dx) {
 				numpx = r = g = b = 0;
 				for (kdy = -3; kdy < 4; ++kdy) {
-					if ((dy+kdy) < 0 || (dy+kdy) >= height)
+					if ((dy + kdy) < 0 || (dy + kdy) >= height)
 						continue;
 					for (kdx = -3; kdx < 4; ++kdx) {
-						if ((dx+kdx) < 0 || (dx+kdx) >= width)
+						if ((dx + kdx) < 0 || (dx + kdx) >= width)
 							continue;
 
-						r += (blur_area_previous[(dy+kdy)*width+dx+kdx] >> 16) & 0xff;
-						g += (blur_area_previous[(dy+kdy)*width+dx+kdx] >> 8) & 0xff;
-						b += (blur_area_previous[(dy+kdy)*width+dx+kdx] >> 0) & 0xff;
+						r += (blur_area_previous[(dy + kdy) * width + dx + kdx] >> 16) & 0xff;
+						g += (blur_area_previous[(dy + kdy) * width + dx + kdx] >>  8) & 0xff;
+						b += (blur_area_previous[(dy + kdy) * width + dx + kdx] >>  0) & 0xff;
 						numpx++;
 					}
 				}
-				blur_area[dy*width+dx] = ((r/numpx) << 16) | ((g/numpx) << 8) | (b/numpx);
+				blur_area[dy * width + dx] =
+					((r / numpx) << 16) |
+					((g / numpx) <<  8) |
+					((b / numpx) <<  0);
 			}
 		}
 	}
 
 	for (dy = 0; dy < height; ++dy)
 		for (dx = 0; dx < width; ++dx)
-			image->pixels[(y+dy)*image->width+x+dx] = blur_area[dy*width+dx];
+			image->pixels[(y + dy) * image->width + x + dx] = blur_area[dy * width + dx];
 
 	free(blur_area);
 	free(blur_area_previous);
@@ -192,11 +196,12 @@ ppm_image_text_5x7(struct ppm_image *image,
 	cy = y;
 
 	while (*p != '\0' && *p != '\n') {
-		glyph = five_by_seven + *p*7;
+		glyph = five_by_seven + *p * 7;
 		for (gy = 0; gy < 7; ++gy)
 			for (gx = 0; gx < 5; ++gx)
-				if (glyph[gy] & (1 << (4 - gx)) && cy+gy < image->height && cx+gx < image->width)
-					image->pixels[(cy+gy)*image->width+cx+gx] = color;
+				if (glyph[gy] & (1 << (4 - gx)) && cy + gy < image->height
+						&& cx + gx < image->width)
+					image->pixels[(cy + gy) * image->width + cx + gx] = color;
 		cx += 5 + letter_spacing;
 		++p;
 	}
