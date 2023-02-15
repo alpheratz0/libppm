@@ -15,24 +15,42 @@
 
 */
 
+#include <stddef.h>
+
 #include "ppm.h"
 
 static void
-image_fill(const struct ppm_image *img, uint32_t color)
+image_fill(struct ppm_image *img, uint32_t color)
 {
 	uint32_t i;
 	for (i = 0; i < img->width * img->height; ++i)
 		img->pixels[i] = color;
 }
 
+static void
+image_rect(struct ppm_image *img, int x, int y, int w, int h,
+		uint32_t color)
+{
+	int i, j;
+	for (i = 0; i < h; ++i)
+		for (j = 0; j < w; ++j)
+			img->pixels[(y+i)*img->width+x+j] = color;
+}
+
 int
 main(void)
 {
+	size_t i;
 	struct ppm_image *img;
 
 	img = ppm_image_create(256, 256);
+
 	image_fill(img, 0xff0000);
-	ppm_image_text_5x7(img, 15, 15, 0xffff00, 3, "Hello world!");
+	image_rect(img, 10, 10, img->width - 20, img->height - 20, 0x1239e6);
+
+	for (i = 0; i < 10; ++i)
+		ppm_image_text_5x7(img, 20, 20 * (i + 1), 0xffff00 - 0x3300 * i, 3, "Hello world!");
+
 	ppm_image_save(img, "hello_world.ppm");
 	ppm_image_destroy(img);
 
