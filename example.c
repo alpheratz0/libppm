@@ -22,7 +22,7 @@
 static void
 image_fill(struct ppm_image *img, uint32_t color)
 {
-	uint32_t i;
+	int i;
 	for (i = 0; i < img->width * img->height; ++i)
 		img->pixels[i] = color;
 }
