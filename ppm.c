@@ -195,7 +195,13 @@ ppm_image_text_5x7(struct ppm_image *image,
 	cx = x;
 	cy = y;
 
-	while (*p != '\0' && *p != '\n') {
+	while (*p != '\0') {
+		if (*p == '\n') {
+			cx = x;
+			cy += 10;
+			++p;
+			continue;
+		}
 		glyph = five_by_seven + *p * 7;
 		for (gy = 0; gy < 7; ++gy)
 			for (gx = 0; gx < 5; ++gx)
