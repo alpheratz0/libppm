@@ -15,12 +15,23 @@
 
 */
 
-#include <stddef.h>
-
+#include <stdint.h>
 #include "ppm.h"
 
+const char *filename = "main.c";
+const char *src = \
+	"#include <stdio.h>\n"
+	"\n"
+	"int main(argc, argv)\n"
+	"    int argc;\n"
+	"    char *argv[];\n"
+	"{\n"
+	"    for (;;)\n"
+	"        printf(\"Thank you Dennis Ritchie!\\n\");\n"
+	"}";
+
 static void
-image_fill(struct ppm_image *img, uint32_t color)
+ppm_image_fill(struct ppm_image *img, uint32_t color)
 {
 	int i;
 	for (i = 0; i < img->width * img->height; ++i)
@@ -28,7 +39,23 @@ image_fill(struct ppm_image *img, uint32_t color)
 }
 
 static void
-image_rect(struct ppm_image *img, int x, int y, int w, int h,
+ppm_image_rect(struct ppm_image *img, int x, int y, int w, int h,
+		uint32_t color)
+{
+	int i;
+
+	for (i = 0; i < w; ++i)
+		img->pixels[y*img->width+x+i] =
+			img->pixels[(y+h-1)*img->width+x+i] =
+				color;
+	for (i = 0; i < h; ++i)
+		img->pixels[(y+i)*img->width+x] =
+			img->pixels[(y+i)*img->width+x+w-1] =
+				color;
+}
+
+static void
+ppm_image_fill_rect(struct ppm_image *img, int x, int y, int w, int h,
 		uint32_t color)
 {
 	int i, j;
@@ -40,18 +67,17 @@ image_rect(struct ppm_image *img, int x, int y, int w, int h,
 int
 main(void)
 {
-	size_t i;
 	struct ppm_image *img;
 
-	img = ppm_image_create(256, 256);
+	img = ppm_image_create(400, 150);
 
-	image_fill(img, 0xff0000);
-	image_rect(img, 10, 10, img->width - 20, img->height - 20, 0x1239e6);
-
-	for (i = 0; i < 10; ++i)
-		ppm_image_text_5x7(img, 20, 20 * (i + 1), 0xffff00 - 0x3300 * i, 3, "Hello world!");
-
-	ppm_image_save(img, "hello_world.ppm");
+	ppm_image_fill(img, 0x2e2e2e);
+	ppm_image_fill_rect(img, 10, 10, img->width-20, img->height-42, 0x432f29);
+	ppm_image_rect(img, 10, 10, img->width-20, img->height-42, 0xff4000);
+	ppm_image_fill_rect(img, img->width-200, img->height-32, 190, 22, 0xff4000);
+	ppm_image_text_5x7(img, img->width-200+(22-7)/2, img->height-32+(22-7)/2, 0xffffff, 2, filename);
+	ppm_image_text_5x7(img, 10+(22-7)/2, 10+(22-7)/2, 0xffffff, 2, src);
+	ppm_image_save(img, "code.ppm");
 	ppm_image_destroy(img);
 
 	return 0;
