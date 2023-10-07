@@ -21,6 +21,18 @@
 
 #include <stdint.h>
 
+typedef int (*ppm_image_text_highlighter)(const char *text, uint32_t *color);
+
+#define HIGHLIGHT(label,c) do { \
+	if (NULL == label) { \
+		*color = c; \
+		return 1; \
+	} else if (strncmp(text,label,strlen(label))==0) { \
+		*color = c; \
+		return strlen(label); \
+	} \
+} while (0)
+
 struct ppm_image {
 	int width;
 	int height;
@@ -45,6 +57,11 @@ ppm_image_blur(struct ppm_image *image,
 extern void
 ppm_image_text_5x7(struct ppm_image *image,
                    int x, int y, uint32_t color,
+                   int letter_spacing, const char *text);
+
+extern void
+ppm_image_text_highlight_5x7(struct ppm_image *image,
+                   int x, int y, ppm_image_text_highlighter highlighter,
                    int letter_spacing, const char *text);
 
 extern void

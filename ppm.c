@@ -215,6 +215,43 @@ ppm_image_text_5x7(struct ppm_image *image,
 }
 
 extern void
+ppm_image_text_highlight_5x7(struct ppm_image *image,
+                   int x, int y, ppm_image_text_highlighter highlighter,
+                   int letter_spacing, const char *text)
+{
+	uint32_t color;
+	int cx, cy, gx, gy, highlight_len;
+	unsigned char *glyph;
+	const char *p;
+
+	highlight_len = 0;
+	p = text;
+	cx = x;
+	cy = y;
+
+	while (*p != '\0') {
+		if (highlight_len == 0) {
+			highlight_len = highlighter(p, &color);
+		}
+		highlight_len -= 1;
+		if (*p == '\n') {
+			cx = x;
+			cy += 10;
+			++p;
+			continue;
+		}
+		glyph = five_by_seven + *p * 7;
+		for (gy = 0; gy < 7; ++gy)
+			for (gx = 0; gx < 5; ++gx)
+				if (glyph[gy] & (1 << (4 - gx)) && cy + gy < image->height
+						&& cx + gx < image->width)
+					image->pixels[(cy + gy) * image->width + cx + gx] = color;
+		cx += 5 + letter_spacing;
+		++p;
+	}
+}
+
+extern void
 ppm_image_save(const struct ppm_image *image, const char *path)
 {
 	FILE *fp;
