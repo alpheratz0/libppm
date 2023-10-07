@@ -16,6 +16,7 @@
 
 */
 
+#include <string.h>
 #include <stdint.h>
 #include "ppm.h"
 
@@ -23,13 +24,30 @@ const char *filename = "main.c";
 const char *src = \
 	"#include <stdio.h>\n"
 	"\n"
-	"int main(argc, argv)\n"
-	"    int argc;\n"
-	"    char *argv[];\n"
+	"int main(int argc, char *argv[])\n"
 	"{\n"
 	"    for (;;)\n"
 	"        printf(\"Thank you Dennis Ritchie!\\n\");\n"
 	"}";
+
+static int
+c_highlighter(const char *text, uint32_t *color)
+{
+	HIGHLIGHT("#include", 0x2b93f0);
+	HIGHLIGHT("<stdio.h>", 0x73cf27);
+	HIGHLIGHT("int", 0x6ecccd);
+	HIGHLIGHT("char *", 0x6ecccd);
+	HIGHLIGHT("[", 0xffff00);
+	HIGHLIGHT("]", 0xffff00);
+	HIGHLIGHT("(", 0xffff00);
+	HIGHLIGHT(")", 0xffff00);
+	HIGHLIGHT("{", 0xffff00);
+	HIGHLIGHT("}", 0xffff00);
+	HIGHLIGHT("\"", 0x00ff00);
+	HIGHLIGHT("for", 0xcccc00);
+	HIGHLIGHT("printf", 0xcccc00);
+	HIGHLIGHT(NULL, 0xffffff);
+}
 
 static void
 ppm_image_fill(struct ppm_image *img, uint32_t color)
@@ -70,14 +88,14 @@ main(void)
 {
 	struct ppm_image *img;
 
-	img = ppm_image_create(400, 150);
+	img = ppm_image_create(400, 125);
 
 	ppm_image_fill(img, 0x2e2e2e);
 	ppm_image_fill_rect(img, 10, 10, img->width-20, img->height-42, 0x432f29);
 	ppm_image_rect(img, 10, 10, img->width-20, img->height-42, 0xff4000);
 	ppm_image_fill_rect(img, img->width-200, img->height-32, 190, 22, 0xff4000);
 	ppm_image_text_5x7(img, img->width-200+(22-7)/2, img->height-32+(22-7)/2, 0xffffff, 2, filename);
-	ppm_image_text_5x7(img, 10+(22-7)/2, 10+(22-7)/2, 0xffffff, 2, src);
+	ppm_image_text_highlight_5x7(img, 10+(22-7)/2, 10+(22-7)/2, c_highlighter, 2, src);
 	ppm_image_save(img, "code.ppm");
 	ppm_image_destroy(img);
 
